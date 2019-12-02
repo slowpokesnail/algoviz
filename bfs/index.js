@@ -27,54 +27,9 @@
                 }
             })
 
-            // append lines
-            const lines = svg.selectAll('.line')
-                .data(links)
-                .enter()
-                .append('line')
-                    .attr('x1', d => d.source.x)
-                    .attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x)
-                    .attr('y2', d => d.target.y)
-                    .attr('id', (d,i) => "line" + (d.source.id + "d" + d.target.id))
-                    .style('stroke', '#9c9c9c')
-                    .style('stroke-width', '2')
-                    .style('opacity', '0.2')
-
-            svg.selectAll('.line')
-                .data(links)
-                .enter()
-                .append('line')
-                    .attr('x1', d => d.source.x)
-                    .attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x)
-                    .attr('y2', d => d.target.y)
-                    .style('stroke', '#9c9c9c')
-                    .style('stroke-width', '2')
-                    .style('opacity', '0.2')
-
-            // append points
-            svg.selectAll('.circle')
-                .data(data)
-                .enter()
-                .append('circle')
-                    .attr('cx', d => d.x)
-                    .attr('cy', d => d.y)
-                    .attr('r', 5)
-                    .attr('id', d => "dot" + d.id)
-                    .attr('fill', '#9c9c9c')
+            reset(links, data)
 
             
-            // append start and end text
-            svg.append('text')
-                .attr('x', 80)
-                .attr('y', 80)
-                .text("start")
-
-            svg.append('text')
-                .attr('x', 500)
-                .attr('y', 505)
-                .text("end")
 
             // d3.select('#line' + 1)
             //     .attr('fill', "#4e79a7")
@@ -103,8 +58,8 @@
                     })
 
                     if (!visited.has(currId)) {
-                        if (typeof curr.temp != "undefined") {
-                            count = animate(curr.temp, curr.id, depth, count)
+                        if (typeof curr.parent != "undefined") {
+                            count = animate(curr.parent, curr.id, depth, count)
                         }
                     }
                     
@@ -135,79 +90,92 @@
 
                 }
 
-                // append legend
-
-                // append depth labels
-                svg.append('text')
-                    .attr('x', 790)
-                    .attr('y', 50)
-                    .text("Depth")
-
-                for (let i = 0; i < 6; i++) {
-                    svg.append('circle')
-                        .attr('cx', 800)
-                        .attr('cy', 50 + 25*(i + 1))
-                        .attr('r', 4)
-                        .style('fill', colors[i])
-
-                    svg.append('text')
-                        .attr('x', 810)
-                        .attr('y', 55 + 25*(i+1))
-                        .text(i)
-                }
-
-                // append line key
-                svg.append('text')
-                    .attr('x', 790)
-                    .attr('y', 250)
-                    .text("Lines")
-
-                svg.append('line')
-                    .attr('x1', 792)
-                    .attr('y1', 275)
-                    .attr('x2', 808)
-                    .attr('y2', 275)
-                    .style('stroke', '#9c9c9c')
-                    .style('stroke-width', '2')
-                    .style('opacity', '0.2')
-
-                svg.append('text')
-                    .attr('x', 818)
-                    .attr('y', 278)
-                    .text("unexplored")
-
-                svg.append('line')
-                .attr('x1', 792)
-                .attr('y1', 300)
-                .attr('x2', 808)
-                .attr('y2', 300)
-                .style('stroke', '#9c9c9c')
-                .style('stroke-width', '2')
-                .style('opacity', '1')
-
-                svg.append('text')
-                    .attr('x', 818)
-                    .attr('y', 303)
-                    .text("explored")
-
-                svg.append('line')
-                    .attr('x1', 792)
-                    .attr('y1', 325)
-                    .attr('x2', 808)
-                    .attr('y2', 325)
-                    .style('stroke', '#03b6fc')
-                    .style('stroke-width', '2')
-                    .style('opacity', '1')
-
-                svg.append('text')
-                    .attr('x', 818)
-                    .attr('y', 328)
-                    .text("shortest")
+                appendLegend()
                 
+            }) // start btn onclick callback end
+
+            // initiate reset button functionality
+            const resetBtn = d3.select('#reset')
+            resetBtn.attr('disabled', 'true')
+            resetBtn.on('click', () => {
+                reset(links, data)
             })
-        })
+
+        }) // load links data callback end
         
-    })
+    }) // load points data callback end
+
+    // append legend after animation
+    function appendLegend() {
+        // append depth labels
+        const legend = svg.append('g')
+            .attr('id', "legend")
+
+        legend.append('text')
+        .attr('x', 790)
+        .attr('y', 50)
+        .text("Depth")
+
+        for (let i = 0; i < 6; i++) {
+            legend.append('circle')
+                .attr('cx', 800)
+                .attr('cy', 50 + 25*(i + 1))
+                .attr('r', 4)
+                .style('fill', colors[i])
+
+            legend.append('text')
+                .attr('x', 810)
+                .attr('y', 55 + 25*(i+1))
+                .text(i)
+        }
+
+        legend.append('text')
+        .attr('x', 790)
+        .attr('y', 250)
+        .text("Lines")
+
+        legend.append('line')
+            .attr('x1', 792)
+            .attr('y1', 275)
+            .attr('x2', 808)
+            .attr('y2', 275)
+            .style('stroke', '#9c9c9c')
+            .style('stroke-width', '2')
+            .style('opacity', '0.2')
+
+        legend.append('text')
+            .attr('x', 818)
+            .attr('y', 278)
+            .text("unexplored")
+
+        legend.append('line')
+        .attr('x1', 792)
+        .attr('y1', 300)
+        .attr('x2', 808)
+        .attr('y2', 300)
+        .style('stroke', '#9c9c9c')
+        .style('stroke-width', '2')
+        .style('opacity', '1')
+
+        legend.append('text')
+            .attr('x', 818)
+            .attr('y', 303)
+            .text("explored")
+
+        legend.append('line')
+            .attr('x1', 792)
+            .attr('y1', 325)
+            .attr('x2', 808)
+            .attr('y2', 325)
+            .style('stroke', '#03b6fc')
+            .style('stroke-width', '2')
+            .style('opacity', '1')
+
+        legend.append('text')
+            .attr('x', 818)
+            .attr('y', 328)
+            .text("shortest")
+    }
 
     // backtrace the shortest path
     function backTrace(arr, curr, data, startId) {
@@ -219,11 +187,12 @@
             const parent = data.find(d => d.id == curr.parent)
             backTrace(arr, parent, data, startId)
         }
+        document.getElementById('reset').disabled = false
     }
 
     function animateShortestPath(path) {
         for (let i = 0; i < path.length - 1; i++) {
-            const line = findLine(path[i].id, path[i+1].id)
+            const {line} = findLine(path[i].id, path[i+1].id)
             line.style('stroke', '#03b6fc')
             // line.transition()
             //     .duration(750)
@@ -232,28 +201,53 @@
     }
 
     function animate(parentArr, child, depth, count) {
-        const parent = parentArr.pop()
-        let line = findLine(parent, child)
+        // const parent = parentArr.pop()
+        const parent = parentArr
+        const {line, reverse} = findLine(parent, child)
         if (!line.empty()) {
-            animateLine(line, depth, child)
+            animateLine(line, depth, child, reverse)
         }
         return count + 1
     }
 
     function findLine(parent, child) {
         let line = d3.select('#line' + (parent + "d" + child))
+        let reverse = false
         if (line.empty()) {
             line = d3.select('#line' + (child + 'd' + parent))
+            reverse = true
         }
-        return line
+        return {line, reverse}
     }
 
-    function animateLine(line, depth, child) {
-        line.style('opacity', '1').style('stroke-width', 2)
+    function animateLine(line, depth, child, reverse) {
+        
         const totalLength = line.node().getTotalLength()
         const animated = line.attr('class')
         if (animated != 'animated') {
-            line
+            if (reverse) {
+                line
+                // Set the line pattern to be an long line followed by an equally long gap
+                .attr("stroke-dasharray", totalLength + " " + totalLength)
+                // Set the intial starting position so that only the gap is shown by offesetting by the total length of the line
+                .attr("stroke-dashoffset", totalLength)
+                // Then the following lines transition the line so that the gap is hidden...
+                .transition()
+                .duration(500)
+                .delay(depth*500)
+                .on('end', () => {
+                    if (child != "none") {
+                        d3.select('#dot' + child)
+                            .attr('fill', colors[depth])
+                    }
+                })
+                .ease(d3.easeLinear) //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
+                .attr("stroke-dashoffset", totalLength*2);
+                line.style('opacity', '1').style('stroke-width', 2)
+                line.attr('class', 'animated')
+            } else {
+                line.style('opacity', '1').style('stroke-width', 2)
+                line
                 // Set the line pattern to be an long line followed by an equally long gap
                 .attr("stroke-dasharray", totalLength + " " + totalLength)
                 // Set the intial starting position so that only the gap is shown by offesetting by the total length of the line
@@ -270,11 +264,68 @@
                 })
                 .ease(d3.easeLinear) //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
                 .attr("stroke-dashoffset", 0);
-            line.attr('class', 'animated')
+                line.attr('class', 'animated')
+            }
+            
             return true
         } else {
             return false
         }        
+    }
+
+    function reset(links, data) {
+        svg.select('#legend').remove()
+        svg.select('#viz').remove()
+
+        const viz = svg.append('g').attr('id', 'viz')
+        // append lines
+        const lines = viz.selectAll('.line')
+            .data(links)
+            .enter()
+            .append('line')
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y)
+                .attr('id', (d,i) => "line" + (d.source.id + "d" + d.target.id))
+                .style('stroke', '#9c9c9c')
+                .style('stroke-width', '2')
+                .style('opacity', '0.2')
+
+        viz.selectAll('.line')
+            .data(links)
+            .enter()
+            .append('line')
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y)
+                .style('stroke', '#9c9c9c')
+                .style('stroke-width', '2')
+                .style('opacity', '0.2')
+
+        // append points
+        viz.selectAll('.circle')
+            .data(data)
+            .enter()
+            .append('circle')
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', 5)
+                .attr('id', d => "dot" + d.id)
+                .attr('fill', '#9c9c9c')
+
+        
+        // append start and end text
+        viz.append('text')
+            .attr('x', 80)
+            .attr('y', 80)
+            .text("start")
+
+        viz.append('text')
+            .attr('x', 500)
+            .attr('y', 505)
+            .text("end")
     }
 
 
