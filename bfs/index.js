@@ -276,6 +276,9 @@
     function reset(links, data) {
         svg.select('#legend').remove()
         svg.select('#viz').remove()
+        data.forEach((d) => {
+            delete d.parent
+        })
 
         const viz = svg.append('g').attr('id', 'viz')
         // append lines
