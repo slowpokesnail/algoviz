@@ -7,10 +7,12 @@ This website shows how breadth first search works. Something interesting about t
 
 I used the d3.js library to create this visualization. Some important functions are:
 
-__backTrace__
+__backTrace__  
+
 This function traces the path the search took to get to the target node and highlights the found path by calling __animateShortestPath__
 
-__animateLine__
+__animateLine__  
+
 This function animates a given egde or line object
 
 
