@@ -9,7 +9,10 @@ I used the d3.js library to create this visualization. Some important functions 
 
 __backTrace__  
 
-This function traces the path the search took to get to the target node and highlights the found path by calling __animateShortestPath__
+This function traces the path the search took to get to the target node and highlights the found path by calling _animateShortestPath_
+
+
+
 
 __animateLine__  
 
